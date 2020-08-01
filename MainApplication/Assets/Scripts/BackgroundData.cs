@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Azure.Kinect.Sensor;
+using System;
 using System.Runtime.Serialization;
 
 // Class which contains all data sent from background thread to main thread.
@@ -10,10 +11,15 @@ public class BackgroundData : ISerializable
 
     // Depth image frame. 
     public byte[] DepthImage { get; set; }
+    public byte[] ColorImage { get; set; }
 
     public int DepthImageWidth { get; set; }
     public int DepthImageHeight { get; set; }
     public int DepthImageSize { get; set; }
+
+    public int ColorImageWidth { get; set; }
+    public int ColorImageHeight { get; set; }
+    public int ColorImageSize { get; set; }
 
     // Number of detected bodies.
     public ulong NumOfBodies { get; set; }
@@ -24,6 +30,7 @@ public class BackgroundData : ISerializable
     public BackgroundData(int maxDepthImageSize = 1024 * 1024 * 3, int maxBodiesCount = 20, int maxJointsSize = 100)
     {
         DepthImage = new byte[maxDepthImageSize];
+        ColorImage = new byte[1280 * 720 * 4];
 
         Bodies = new Body[maxBodiesCount];
         for (int i = 0; i < maxBodiesCount; i++)
@@ -38,9 +45,13 @@ public class BackgroundData : ISerializable
         DepthImageWidth = (int)info.GetValue("DepthImageWidth", typeof(int));
         DepthImageHeight = (int)info.GetValue("DepthImageHeight", typeof(int));
         DepthImageSize = (int)info.GetValue("DepthImageSize", typeof(int));
+        ColorImageWidth = (int)info.GetValue("ColorImageWidth", typeof(int));
+        ColorImageHeight = (int)info.GetValue("ColorImageHeight", typeof(int));
+        ColorImageSize = (int)info.GetValue("ColorImageSize", typeof(int));
         NumOfBodies = (ulong)info.GetValue("NumOfBodies", typeof(ulong));
         Bodies = (Body[])info.GetValue("Bodies", typeof(Body[]));
         DepthImage = (byte[])info.GetValue("DepthImage", typeof(byte[]));
+        ColorImage = (byte[])info.GetValue("ColorImage", typeof(byte[]));
     }
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -51,6 +62,9 @@ public class BackgroundData : ISerializable
         info.AddValue("DepthImageWidth", DepthImageWidth, typeof(int));
         info.AddValue("DepthImageHeight", DepthImageHeight, typeof(int));
         info.AddValue("DepthImageSize", DepthImageSize, typeof(int));
+        info.AddValue("ColorImageWidth", ColorImageWidth, typeof(int));
+        info.AddValue("ColorImageHeight", ColorImageHeight, typeof(int));
+        info.AddValue("ColorImageSize", ColorImageSize, typeof(int));
         info.AddValue("NumOfBodies", NumOfBodies, typeof(ulong));
         Body[] ValidBodies = new Body[NumOfBodies];
         for (int i = 0; i < (int)NumOfBodies; i ++)
@@ -64,6 +78,12 @@ public class BackgroundData : ISerializable
             ValidDepthImage[i] = DepthImage[i];
         }
         info.AddValue("DepthImage", ValidDepthImage, typeof(byte[]));
+        byte[] ValidColorImage = new byte[ColorImageSize];
+        for (int i = 0; i < ColorImageSize; i++)
+        {
+            ValidColorImage[i] = ColorImage[i];
+        }
+        info.AddValue("ColorImage", ValidColorImage, typeof(byte[]));
     }
 }
 

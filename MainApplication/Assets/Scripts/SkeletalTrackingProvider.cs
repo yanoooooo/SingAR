@@ -29,8 +29,11 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
                 device.StartCameras(new DeviceConfiguration()
                 {
                     CameraFPS = FPS.FPS30,
-                    ColorResolution = ColorResolution.Off,
+                    //ColorResolution = ColorResolution.Off,
+                    ColorFormat = ImageFormat.ColorBGRA32,
+                    ColorResolution = ColorResolution.R720p,
                     DepthMode = DepthMode.NFOV_Unbinned,
+                    //SynchronizedImagesOnly = true,
                     WiredSyncMode = WiredSyncMode.Standalone,
                 });
 
@@ -93,6 +96,21 @@ public class SkeletalTrackingProvider : BackgroundDataProvider
                                     currentFrameData.DepthImage[byteCounter++] = b;
                                     currentFrameData.DepthImage[byteCounter++] = b;
                                     currentFrameData.DepthImage[byteCounter++] = b;
+                                }
+
+                                // Store color image
+                                Image colorImage = bodyFrameCapture.Color;
+                                currentFrameData.ColorImageWidth = colorImage.WidthPixels;
+                                currentFrameData.ColorImageHeight = colorImage.HeightPixels;
+                                currentFrameData.ColorImageSize = currentFrameData.ColorImageWidth * currentFrameData.ColorImageHeight * 4;
+
+                                BGRA[] colorArray = colorImage.GetPixels<BGRA>().ToArray();
+                                for (int it = 0; it < colorArray.Length; it++)
+                                {
+                                    currentFrameData.ColorImage[it * 4] = colorArray[it].B;
+                                    currentFrameData.ColorImage[it * 4 + 1] = colorArray[it].G;
+                                    currentFrameData.ColorImage[it * 4 + 2] = colorArray[it].R;
+                                    currentFrameData.ColorImage[it * 4 + 3] = colorArray[it].A;
                                 }
 
                                 if (RawDataLoggingFile != null && RawDataLoggingFile.CanWrite)
