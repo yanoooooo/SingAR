@@ -30,7 +30,7 @@ public class BackgroundData : ISerializable
     public BackgroundData(int maxDepthImageSize = 1024 * 1024 * 3, int maxBodiesCount = 20, int maxJointsSize = 100)
     {
         DepthImage = new byte[maxDepthImageSize];
-        ColorImage = new byte[1280 * 720 * 4];
+        ColorImage = new byte[Common.screenWidth * Common.screenHeight * 4];
 
         Bodies = new Body[maxBodiesCount];
         for (int i = 0; i < maxBodiesCount; i++)
