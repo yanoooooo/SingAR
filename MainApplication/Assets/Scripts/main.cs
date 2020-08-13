@@ -9,6 +9,7 @@ public class main : MonoBehaviour
     // Handler for SkeletalTracking thread.
     public GameObject m_tracker;
     public GameObject captureScreen;
+    public GameObject effectsObject;
     private BackgroundDataProvider m_backgroundDataProvider;
     public BackgroundData m_lastFrameData = new BackgroundData();
 
@@ -31,6 +32,7 @@ public class main : MonoBehaviour
                 captureScreen.GetComponent<CaptureHandler>().updateTracker(m_lastFrameData);
                 if (m_lastFrameData.NumOfBodies != 0)
                 {
+                    effectsObject.GetComponent<EffectHandler>().updateTracker(m_lastFrameData);
                     m_tracker.GetComponent<TrackerHandler>().updateTracker(m_lastFrameData);
                 }
             }
